@@ -32,6 +32,7 @@ namespace MyLeasing
             });
 
             services.AddTransient<SeedDb>();
+            services.AddScoped<IRepository,Repository>();
 
             
 

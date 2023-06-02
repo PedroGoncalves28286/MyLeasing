@@ -4,6 +4,8 @@ namespace MyLeasing.Web.Data.Entities
 {
     public class Owner
     {
+        internal object OwnerName;
+
         public int Id { get; set; }
 
         [Required]   
