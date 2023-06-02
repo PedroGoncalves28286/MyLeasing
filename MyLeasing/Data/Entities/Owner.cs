@@ -6,9 +6,11 @@ namespace MyLeasing.Web.Data.Entities
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required]   
         public double Document { get; set; }
 
+        [Required]
+        [MaxLength(50, ErrorMessage ="The field{0} can contain {1} characters length.")]
         [Display(Name = "Owner Name")]
         public string Name { get; set; }
 
