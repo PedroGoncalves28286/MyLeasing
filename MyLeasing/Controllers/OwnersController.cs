@@ -63,9 +63,7 @@ namespace MyLeasing.Web.Controllers
             {
                 //Todo :Modificar para o user que estiver logado 
                 owner.User = await _userHelper.GetUserByEmailAsync("pedromfonsecagoncalves@gmail.com");
-
-                await _ownerRepository.CreateAsync(owner);
-                
+                await _ownerRepository.CreateAsync(owner);     
                 return RedirectToAction(nameof(Index));
             }
             return View(owner);
