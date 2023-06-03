@@ -2,7 +2,7 @@
 
 namespace MyLeasing.Web.Data.Entities
 {
-    public class Owner
+    public class Owner :IEntity
     {
         internal object OwnerName;
 
@@ -23,9 +23,6 @@ namespace MyLeasing.Web.Data.Entities
         public string CellPhone { get; set; }
 
         public string Address { get; set; }
-
-
-
-
+        public object User { get; internal set; }
     }
 }

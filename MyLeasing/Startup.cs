@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MyLeasing.Commom.Data;
 using MyLeasing.Web.Data;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace MyLeasing
             });
 
             services.AddTransient<SeedDb>();
-            services.AddScoped<IRepository,Repository>();
+            services.AddScoped<IOwnerRepository, OwnerRepository>();
 
             
 
