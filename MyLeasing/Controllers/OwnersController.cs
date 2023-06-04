@@ -16,14 +16,21 @@ namespace MyLeasing.Web.Controllers
     {
         private readonly IOwnerRepository _ownerRepository;
         private readonly IUserHelper _userHelper;
+        private readonly IImageHelper _imageHelper;
+        private readonly IConverterHelper _converterHelper;
 
         public OwnersController(
             IOwnerRepository ownerRepository,
-            IUserHelper userHelper)
+            IUserHelper userHelper,
+            IImageHelper imageHelper,
+            IConverterHelper converterHelper)
+
         {
             
            _ownerRepository = ownerRepository;
             _userHelper = userHelper;
+            _imageHelper = imageHelper;
+            _converterHelper = converterHelper;
         }
 
         // GET: Owners
@@ -81,7 +88,8 @@ namespace MyLeasing.Web.Controllers
 
                 }
 
-                var owner = this.ToOwner(model, path);
+
+                var owner = _converterHelper.ToOwner(model, path, true);
 
 
                 //Todo :Modificar para o user que estiver logado 
@@ -120,6 +128,7 @@ namespace MyLeasing.Web.Controllers
                 return NotFound();
             }
             var model = this.ToOwnerViewModel(owner);
+            model =_converterHelper.ToOwnerViewModel (owner);
             return View(model);
         }
 
@@ -154,27 +163,16 @@ namespace MyLeasing.Web.Controllers
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
-                        var guid =Guid.NewGuid().ToString();
-                        var file =$"{guid}.png";
-
-                        path = Path.Combine(
-                            Directory.GetCurrentDirectory(),
-                            "wwwroot\\images\\products",
-                            model.ImageFile.FileName);
-
-                        using (var stream = new FileStream(path, FileMode.Create))
-                        {
-                            await  model.ImageFile.CopyToAsync(stream);
-                        }
-
-                        path = $"~/images/products/{file}";
+                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "owners");
 
                     }
+          
                     var owner = this.ToOwner(model,path);
 
                     //Todo :modificar para o user que estiver logado 
-                    owner.user =await _userHelper.GetUserByIdAsync("pedromfonsecaagoncalves@gmail.com")
+                    owner.user = await _userHelper.GetUserByIdAsync("pedromfonsecaagoncalves@gmail.com");
                     await _ownerRepository.UpdateAsync(owner);  
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
