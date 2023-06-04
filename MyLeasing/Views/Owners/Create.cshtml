@@ -1,17 +1,13 @@
-﻿@model MyLeasing.Web.Data.Entities.Owner
-
+﻿@model MyLeasing.Web.Models.OwnerViewModel
 @{
     ViewData["Title"] = "Create new owner";
 }
 
-<h1>Edit</h1>
-
-<h4>Owner</h4>
-
+<h1>New Owner</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Document" class="control-label"></label>
@@ -19,9 +15,9 @@
                 <span asp-validation-for="Document" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="OwnerName" class="control-label"></label>
+                <input asp-for="OwnerName" class="form-control" />
+                <span asp-validation-for="OwnerName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="FixedPhone" class="control-label"></label>
@@ -39,8 +35,13 @@
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-sucess">Back to List</a>
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" class="form-control" type="file" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-success">Back to List</a>
             </div>
         </form>
     </div>
@@ -49,5 +50,7 @@
 
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
