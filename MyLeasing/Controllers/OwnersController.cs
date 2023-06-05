@@ -100,19 +100,6 @@ namespace MyLeasing.Web.Controllers
             return View(model);
         }
 
-        private Owner ToOwner(OwnerViewModel model, string path)
-        {
-            return new Owner
-            {
-                Document = model.Document,
-                ImageUrl = model.ImageUrl,
-                Name = model.Name,
-                FixedPhone = model.FixedPhone,
-                CellPhone = model.CellPhone,
-                Address = model.Address
-            };
-        }
-
 
         // GET: Owners/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -127,23 +114,12 @@ namespace MyLeasing.Web.Controllers
             {
                 return NotFound();
             }
-            var model = this.ToOwnerViewModel(owner);
-            model =_converterHelper.ToOwnerViewModel (owner);
+           
+            var model =_converterHelper.ToOwnerViewModel (owner);
             return View(model);
         }
 
-        private OwnerViewModel ToOwnerViewModel(Owner owner)
-        {
-            return new OwnerViewModel
-            {
-                Document = owner.Id,
-                ImageUrl = owner.ImageUrl,
-                Name = owner.Name,
-                FixedPhone = owner.FixedPhone,
-                CellPhone = owner.CellPhone,
-                Address = owner.Address,
-            };
-        }
+       
 
         // POST: Owners/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -168,6 +144,7 @@ namespace MyLeasing.Web.Controllers
                     }
           
                     var owner = this.ToOwner(model,path);
+                    var product = _converterHelper.ToOwner(model, path, false);
 
                     //Todo :modificar para o user que estiver logado 
                     owner.user = await _userHelper.GetUserByIdAsync("pedromfonsecaagoncalves@gmail.com");
