@@ -1,5 +1,4 @@
-﻿using MyLeasing.Commom.Data;
-using MyLeasing.Web.Data.Entities;
+﻿using MyLeasing.Web.Data.Entities;
 using System.Linq;
 using System.Threading.Tasks;
 

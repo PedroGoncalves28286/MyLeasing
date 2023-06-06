@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MyLeasing.Commom.Data;
+﻿using MyLeasing.Commom.Data;
 using MyLeasing.Web.Data.Entities;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,6 +25,12 @@ namespace MyLeasing.Web.Data
             {
                 return _context.Lessee.Include(o => o.user).FirstOrDefault(o => o.Id == id);
             });
+        }
+
+        public async Task CreateAsync(Task entity)
+        {
+            await _context.Set<Lessee>().AddAsync(entity);
+            await SaveAllAsync();
         }
     }
 }

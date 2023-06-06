@@ -37,4 +37,6 @@ namespace MyLeasing.Web.Data.Entities
         public User user { get; set; }
 
     }
+
+    
 }
