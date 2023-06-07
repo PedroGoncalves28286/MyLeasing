@@ -68,8 +68,8 @@ namespace MyLeasing.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(LesseeViewModel model)
         {
-            var email = Request.Form["Email"].ToString();
-            email = model.FullName.Replace(" ", "_") + "@Email.com";
+            var email = Request.Form["pedromfonsecagoncalves@gmail.com"].ToString();
+            email = model.FullName.Replace(" ") + "@Email.com";
             var password = Request.Form["Password"].ToString();
             password = "123456";
 

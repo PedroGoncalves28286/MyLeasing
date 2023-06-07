@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using MyLeasing.Web.Data.Entities;
 
+
 namespace MyLeasing.Web.Helpers
 {
     public interface IUserHelper

@@ -16,7 +16,7 @@ namespace MyLeasing.Commom.Data
         }
         public IQueryable<T> GetAll()
         {
-            return _context.Set<T>().AsNoTracking(); // Vai a tabela busca o que precisa buscar e desliga da tabela
+            return _context.Set<T>().AsNoTracking().OrderBy().OrderBy(equals => e.Name);
         }
         public async Task<T> GetByIdAsync(int id)
         {

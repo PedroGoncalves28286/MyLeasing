@@ -51,11 +51,11 @@ namespace MyLeasing
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddScoped<IImageHelper, ImageHelper>(); 
             services.AddScoped<IConverterHelper, ConverterHelper>();
-
-
+            services.AddScoped<ILesseeRepository, LesseeRepository>();
             services.AddScoped<IOwnerRepository, OwnerRepository>();
+            services.AddScoped<IRepository, Repository>();
 
-            
+            //AddSingleton - Cria o objeto e está sempre ativo! 
 
             services.AddControllersWithViews();
         }

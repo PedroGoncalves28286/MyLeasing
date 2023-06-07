@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MyLeasing.Web.Data;
 using MyLeasing.Web.Data.Entities;
 using MyLeasing.Web.Helpers;
 using System;
@@ -6,100 +7,95 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyLeasing.Web.Data
+namespace MyLeasing.Commom.Data
 {
     public class SeedDb
     {
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
+        private readonly IOwnerRepository _ownerRepository;
+        private readonly ILesseeRepository _lesseeRepository;
         private Random _random;
-
-        public SeedDb(DataContext context, IUserHelper userHelper)
+        public SeedDb(DataContext context, IUserHelper userHelper, IOwnerRepository ownerRepository, ILesseeRepository lesseeRepository)
         {
             _context = context;
             _userHelper = userHelper;
+            _ownerRepository = ownerRepository;
+            _lesseeRepository = lesseeRepository;
             _random = new Random();
         }
-
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync();
-            var user = await _userHelper.GetUserByIdAsync("pedromfonsecagoncalves@gmail.com");
-            if (user == null)
+            for (int i = 0; i < 5; i++)
             {
-                user = new User
-                {
-                    FirstName = "Pedro",
-                    LastName = "Goncalves",
-                    Document = GenerateRandomNumbers(6),
-                    Address = GenerateRandomAddress(),
-                    Email = "pedromfonsecagoncalves@gmail.com",
-                    PhoneNumber = GenerateRandomNumbers(6),
 
-                };
-
-                var result = await _userHelper.AddUserAsync(user, "123456");
-                if (result != IdentityResult.Success)
-                {
-                    throw new InvalidOperationException("Could not create the user in seeder");
-                }
+                User user = await GenerateUserAsync();
+                await AddOwner(user);
             }
 
-            if (!_context.Owners.Any())
+            for (int i = 0; i < 5; i++)
             {
-                AddOwner("ZeManel", user);
-                AddOwner("ZeAntonio", user);
-                AddOwner("ZeZe", user);
-                AddOwner("ZeJose", user);
-                AddOwner("ZeZeca", user);
-                AddOwner("ZeJoaquim", user);
-                AddOwner("ZeJoca", user);
-                AddOwner("ZeXula", user);
-                AddOwner("ZeJusué", user);
-                AddOwner("ZeZeCamarinha", user);
-                await _context.SaveChangesAsync();
+
+                User user = await GenerateUserAsync();
+                await AddLessee(user);
             }
+            await _context.SaveChangesAsync();
+
+            var getUser = await _userHelper.GetUserByEmailAsync("pedromfonsecagoncalves@gmail.com");
         }
-
-        private void AddOwner(string name, User user)
+        private async Task<User> GenerateUserAsync()
         {
-            _context.Owners.Add(new Owner
+            var name = GenerateRandomFirstName();
+            var email = GenerateRandomEmail(name);
+            var user = new User
             {
-                Name = name,
+                FirstName = GenerateRandomFirstName(),
+                LastName = GenerateRandomLastName(),
+                UserName = email,
                 Document = GenerateRandomNumbers(6),
-                FixedPhone = GenerateRandomNumbers(9),
-                CellPhone = GenerateRandomNumbers(9),
                 Address = GenerateRandomAddress(),
+                Email = email,
+                PhoneNumber = GenerateRandomNumbers(6),
+
+            };
+
+            var result = await _userHelper.AddUserAsync(user, "123456");
+            if (result != IdentityResult.Success)
+            {
+                throw new InvalidOperationException("Could not create the user");
+            }
+            return user;
+        }
+        private async Task AddOwner(User user)
+        {
+            var owner = new Owner
+            {
+                Document = user.Document,
+                OwnerName = user.Name,
+                FixedPhone = user.PhoneNumber,
+                CellPhone = user.PhoneNumber,
+                Address = user.Address,
+                UserId = user.Id,
                 User = user
-            });
+            };
+            await _ownerRepository.CreateAsync(owner);
         }
-
-        private string GenerateRandomNumbers(int length)
-        {
-            const string numbers = "0123456789";
-            return new string(Enumerable.Repeat(numbers, length)
-                .Select(s => s[_random.Next(s.Length)]).ToArray());
-        }
-
-        private string GenerateRandomAddress()
-        {
-            return "Random Address";
-        }
-        private Random random = new Random();
 
         private async Task AddLessee(User user)
         {
-            var lessee = new Lessee
+            var lesse = new Lessee
             {
                 Document = user.Document,
-                FirstName = GenerateRandomFirstName(),
-                LastName = GenerateRandomLastName(),
+                Name = GenerateRandomName(),
                 FixedPhone = user.PhoneNumber,
                 CellPhone = user.PhoneNumber,
-                Address = GenerateRandomAddress()
+                Address = GenerateRandomAddress(),
+
             };
 
-            await _lesseeRepository.CreateAsync(lessee);
+            await _lesseeRepository.CreateAsync(lesse);
+
         }
 
         private string GenerateRandomNumbers(int value)
@@ -114,20 +110,12 @@ namespace MyLeasing.Web.Data
             return sb.ToString();
         }
 
-        private string GenerateRandomFirstName()
+        private string GenerateRandomName()
         {
-            string[] firstNames = { "John", "Jane", "Robert", "Emily", "Michael", "Olivia" };
-            int index = random.Next(firstNames.Length);
+            string[] Names = { "John Smith", "Jane Johnson", "Robert Williams", "Emily Brown", "Michael Jones", "Olivia " };
+            int index = random.Next(Names.Length);
 
-            return firstNames[index];
-        }
-
-        private string GenerateRandomLastName()
-        {
-            string[] lastNames = { "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia" };
-            int index = random.Next(lastNames.Length);
-
-            return lastNames[index];
+            return Names[index];
         }
 
         private string GenerateRandomAddress()
@@ -137,11 +125,21 @@ namespace MyLeasing.Web.Data
 
             return addresses[index];
         }
+        private string GenerateRandomEmail(string email)
+        {
+            string[] domains = { "gmail.com", "hotmail.com", "Yahoo.com" };
+            string randomString = Guid.NewGuid().ToString().Substring(0, 8);
+
+            // Concatenando com o domínio
+            email = randomString + "@" + _random.Next(domains.Length);
+
+            return email;
+        }
 
 
 
     }
 
 
-} 
+}
 

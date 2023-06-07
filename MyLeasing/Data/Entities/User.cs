@@ -23,5 +23,6 @@ namespace MyLeasing.Web.Data.Entities
         public string FullName => $"{FirstName} {LastName}";
         public string FullNameWithDocument => $"{FirstName} {LastName} - {Document}";
         public Owner Owner { get; set; }
+        public Lessee Lesseee { get; set; }
     }
 }
