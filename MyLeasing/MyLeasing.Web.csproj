@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\images\Lessees\" />
     <Folder Include="wwwroot\images\owners\" />
   </ItemGroup>
 

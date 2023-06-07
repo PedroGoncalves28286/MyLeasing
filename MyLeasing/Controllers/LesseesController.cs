@@ -75,17 +75,17 @@ namespace MyLeasing.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var path = string.Empty;
+                var Path = string.Empty;
 
                 if (model.ImageFile != null && model.ImageFile.Length > 0)
                 {
-                    path = await _imageHelper.UploadImageAsync(model.ImageFile, "lessees");
+                    Path = Path.Combine (Directory.GetCurrenteDirectory(), "wwwroot\\imagesw\\Lessees", model.ImageFile.FileName);
                 }
 
 
                 var user = await _userHelper.CreateUserAsync(model.FullName, email, password, model.CellPhone, model.Document, model.Address);
                 model.user = await _userHelper.GetUserByEmailAsync(email);
-                var lessee = _converterHelper.ToLesse(model, path, true);
+                var lessee = _converterHelper.ToLesse(model, Path, true);
                 await _lesseeRepository.CreateAsync(lessee);
                 return RedirectToAction(nameof(Index));
             }
