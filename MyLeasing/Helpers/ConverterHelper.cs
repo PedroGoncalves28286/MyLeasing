@@ -33,5 +33,42 @@ namespace MyLeasing.Web.Helpers
                 
             };
         }
+        public Lessee ToLesse(LesseeViewModel model, string path, bool isNew)
+        {
+            return new Lessee
+            {
+                Id = isNew ? 0 : model.Id,
+                Document = model.Document,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                FixedPhone = model.FixedPhone,
+                CellPhone = model.CellPhone,
+                ImageUrl = path,
+                Address = model.Address,
+                UserId = model.UserId,
+                user = model.user
+
+
+            };
+
+        }
+        public LesseeViewModel ToLesseeViewModel(Lessee lessee)
+        {
+            return new LesseeViewModel
+            {
+                Id = lessee.Id,
+                Document = lessee.Document,
+                FirstName = lessee.FirstName,
+                LastName = lessee.LastName,
+                FixedPhone = lessee.FixedPhone,
+                CellPhone = lessee.CellPhone,
+                ImageUrl = lessee.ImageUrl,
+                Address = lessee.Address,
+                UserId = lessee.UserId,
+                user = lessee.user
+
+            };
+
+        }
     }
 }

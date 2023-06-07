@@ -50,9 +50,9 @@ namespace MyLeasing.Commom.Data
             return await _context.Set<T>().AnyAsync(e => e.Id == id);
         }
 
-        public async Task<bool> ExistAsync(T entity)
+        public Task<bool> ExistAsync(T entity)
         {
-            return await _context.SaveChangesAsync() > 0;
+            throw new NotImplementedException();
         }
     }
 }

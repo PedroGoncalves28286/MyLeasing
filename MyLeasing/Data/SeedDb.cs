@@ -87,7 +87,8 @@ namespace MyLeasing.Commom.Data
             var lesse = new Lessee
             {
                 Document = user.Document,
-                Name = GenerateRandomName(),
+                FirstName = GenerateRandomFirstName(),
+                LastName = GenerateRandomLastName(),
                 FixedPhone = user.PhoneNumber,
                 CellPhone = user.PhoneNumber,
                 Address = GenerateRandomAddress(),
@@ -100,14 +101,12 @@ namespace MyLeasing.Commom.Data
 
         private string GenerateRandomNumbers(int value)
         {
-            StringBuilder sb = new StringBuilder();
-
+            string phoneNumber = "";
             for (int i = 0; i < value; i++)
             {
-                sb.Append(random.Next(0, 10));
+                phoneNumber += _random.Next(10).ToString();
             }
-
-            return sb.ToString();
+            return phoneNumber;
         }
 
         private string GenerateRandomName()

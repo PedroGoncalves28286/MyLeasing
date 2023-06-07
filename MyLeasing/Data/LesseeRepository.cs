@@ -27,10 +27,6 @@ namespace MyLeasing.Web.Data
             });
         }
 
-        public async Task CreateAsync(Task entity)
-        {
-            await _context.Set<Lessee>().AddAsync(entity);
-            await SaveAllAsync();
-        }
+        
     }
 }

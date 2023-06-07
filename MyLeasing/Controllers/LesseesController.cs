@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -79,8 +80,17 @@ namespace MyLeasing.Web.Controllers
 
                 if (model.ImageFile != null && model.ImageFile.Length > 0)
                 {
-                    Path = Path.Combine (Directory.GetCurrenteDirectory(), "wwwroot\\imagesw\\Lessees", model.ImageFile.FileName);
-                }
+                    path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imagesw", "Lessees", model.ImageFile.FileName);
+
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await model.ImageFile.CopyToAsync(stream);
+                    }
+
+                    Path = $"~/images/lessees/{model.ImageFile.FileName}";
+;                }
+
+                
 
 
                 var user = await _userHelper.CreateUserAsync(model.FullName, email, password, model.CellPhone, model.Document, model.Address);
