@@ -1,44 +1,35 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using MyLeasing.Commom.Data.Entities;
+
 
 namespace MyLeasing.Web.Data.Entities
 {
-    public class Owner :IEntity
+    public class Owner : IEntity
     {
-        internal object OwnerName;
-
         public int Id { get; set; }
+        public string Document { get; set; }
 
-        [Required]   
-        public double Document { get; set; }
-
-        [Required] 
-        [MaxLength(50, ErrorMessage ="The field{0} can contain {1} characters length.")]
+        [Required]
+        [MaxLength(50)]
         [Display(Name = "Owner Name")]
-        public string Name { get; set; }
+        public string OwnerName { get; set; }
 
         [Display(Name = "Fixed Phone")]
         public string FixedPhone { get; set; }
 
         [Display(Name = "Cell Phone")]
         public string CellPhone { get; set; }
-
         public string Address { get; set; }
-        public object User { get; internal set; }
 
-        public User user { get; set; }
-        public string ImageFullPath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(ImageUrl))
-                {
-                    return null;
-                }
+        [Display(Name = "Photo")]
+        public Guid ImageId { get; set; }
+        public string UserId { get; set; }
+        public User User { get; set; }
+        public string ImageFullPath => ImageId == Guid.Empty
+             ? $"https://myleasingwebtpsi.blob.core.windows.net/owners/imagemindisponivel.png"
+             : $"https://myleasingwebtpsi.blob.core.windows.net/owners/{ImageId}";
 
-                return $"https://localhost:44387//{ImageUrl.Substring(1)}";
-            }
-        }
-
-        public string ImageUrl { get; private set; }
     }
 }

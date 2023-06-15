@@ -26,14 +26,14 @@ namespace MyLeasing.Web.Helpers
             }
             return $"~/photos/{folder}/{file}";
         }
-        public async Task DeleteImageAsync(string imageUrl)
+        public async Task DeleteImageAsync(string imageId)
         {
-            if (!string.IsNullOrEmpty(imageUrl))
+            if (!string.IsNullOrEmpty(imageId))
             {
-                string folder = imageUrl.Split('/')[2];
-                string file = imageUrl.Split('/').Last();
+                string folder = imageId.Split('/')[2];
+                string file = imageId.Split('/').Last();
 
-                string delete = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", folder, file);
+                string delete = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "photos", folder, file);
 
                 if (File.Exists(delete))
                 {
@@ -42,11 +42,6 @@ namespace MyLeasing.Web.Helpers
 
 
             }
-        }
-
-        public Task<string> UloadImageAsync(IFormFile imageFile, string folder)
-        {
-            throw new NotImplementedException();
         }
     }
 }

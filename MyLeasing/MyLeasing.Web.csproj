@@ -6,6 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <_WebToolingArtifacts Remove="Properties\serviceDependencies.json" />
+    <_WebToolingArtifacts Remove="Properties\serviceDependencies.MyLeasingWeb-Web Deploy.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Properties\serviceDependencies.json" />
+    <Content Include="Properties\serviceDependencies.MyLeasingWeb-Web Deploy.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.17" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.17" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.17" />
@@ -20,6 +30,8 @@
   <ItemGroup>
     <Folder Include="wwwroot\images\Lessees\" />
     <Folder Include="wwwroot\images\owners\" />
+    <Folder Include="wwwroot\photos\lessees\" />
+    <Folder Include="wwwroot\photos\owners\" />
   </ItemGroup>
 
 </Project>

@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using MyLeasing.Web.Data;
-using MyLeasing.Web.Data.Entities;
 using MyLeasing.Web.Helpers;
 using MyLeasing.Web.Models;
 
@@ -16,27 +11,28 @@ namespace MyLeasing.Web.Controllers
 {
     public class LesseesController : Controller
     {
-
         private readonly ILesseeRepository _lesseeRepository;
         private readonly IUserHelper _userHelper;
-        private readonly IImageHelper _imageHelper;
+        private readonly IBlobHelper _blobHelper;
         private readonly IConverterHelper _converterHelper;
-        public LesseesController(ILesseeRepository lesseeRepository,
-            IUserHelper userHelper,
-            IImageHelper imageHelper,
-            IConverterHelper converterHelper)
+
+        public LesseesController(
+          ILesseeRepository lesseeRepository,
+          IUserHelper userHelper,
+          IBlobHelper blobHelper,
+          IConverterHelper converter
+        )
         {
             _lesseeRepository = lesseeRepository;
             _userHelper = userHelper;
-            _imageHelper = imageHelper;
-            _converterHelper = converterHelper;
+            _blobHelper = blobHelper;
+            _converterHelper = converter;
         }
 
         // GET: Lessees
         public IActionResult Index()
         {
-            return View(_lesseeRepository.GetAll().OrderBy(P => P.FirstName));
-
+            return View(_lesseeRepository.GetAll().OrderBy(l => l.FirstName));
         }
 
         // GET: Lessees/Details/5
@@ -47,7 +43,8 @@ namespace MyLeasing.Web.Controllers
                 return NotFound();
             }
 
-            var lessee = await _lesseeRepository.GetLesseeByIdWithUserAsync(id.Value);
+            var lessee = await _lesseeRepository.GetByIdAsync(id.Value);
+
             if (lessee == null)
             {
                 return NotFound();
@@ -69,38 +66,24 @@ namespace MyLeasing.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(LesseeViewModel model)
         {
-            var email = Request.Form["pedromfonsecagoncalves@gmail.com"].ToString();
-            email = model.FullName.Replace(" ") + "@Email.com";
-            var password = Request.Form["Password"].ToString();
-            password = "123456";
-
             if (ModelState.IsValid)
             {
-                var Path = string.Empty;
 
-                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                Guid imageId = Guid.Empty;
+
+                if (model.ImageProfile != null && model.ImageProfile.Length > 0)
                 {
-                    path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imagesw", "Lessees", model.ImageFile.FileName);
+                    imageId = await _blobHelper.UploadBlobAsync(model.ImageProfile, "lessees");
+                }
 
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await model.ImageFile.CopyToAsync(stream);
-                    }
+                var lessee = _converterHelper.ToLessee(model, imageId, true);
 
-                    Path = $"~/images/lessees/{model.ImageFile.FileName}";
-;                }
-
-                
-
-
-                var user = await _userHelper.CreateUserAsync(model.FullName, email, password, model.CellPhone, model.Document, model.Address);
-                model.user = await _userHelper.GetUserByEmailAsync(email);
-                var lessee = _converterHelper.ToLesse(model, Path, true);
+                //TODO: Modificar para o user que tiver logado
+                lessee.User = await _userHelper.GetUserByEmailAsync("vitorc@gmail.com");
                 await _lesseeRepository.CreateAsync(lessee);
                 return RedirectToAction(nameof(Index));
             }
             return View(model);
-
         }
 
         // GET: Lessees/Edit/5
@@ -111,11 +94,13 @@ namespace MyLeasing.Web.Controllers
                 return NotFound();
             }
 
-            var lessee = await _lesseeRepository.GetLesseeByIdWithUserAsync(id.Value);
+            var lessee = await _lesseeRepository.GetByIdAsync(id.Value);
+
             if (lessee == null)
             {
                 return NotFound();
             }
+
             var model = _converterHelper.ToLesseeViewModel(lessee);
             return View(model);
         }
@@ -132,33 +117,24 @@ namespace MyLeasing.Web.Controllers
             {
                 try
                 {
-                    var path = string.Empty;
 
-                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    Guid imageId = model.ImageId;
+
+                    if (model.ImageProfile != null && model.ImageProfile.Length > 0)
                     {
-                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "lessees");
+
+                        imageId = await _blobHelper.UploadBlobAsync(model.ImageProfile, "lessees");
                     }
-                    var lessee = _converterHelper.ToLesse(model, path, true);
 
-                    var editedLessee = await _lesseeRepository.GetLesseeByIdWithUserAsync(model.Id);
+                    var lessee = _converterHelper.ToLessee(model, imageId, false);
 
-                    editedLessee.Document = lessee.Document;
-                    editedLessee.FirstName = lessee.FirstName;
-                    editedLessee.LastName = lessee.LastName;
-                    editedLessee.FixedPhone = lessee.FixedPhone;
-                    editedLessee.CellPhone = lessee.CellPhone;
-                    editedLessee.Address = lessee.Address;
-
-
-                    await _lesseeRepository.UpdateAsync(editedLessee);
-                    await _userHelper.UpdateUserAsync(editedLessee.user, editedLessee.FullName, editedLessee.Document, editedLessee.CellPhone, editedLessee.Address);
-
-
-
+                    //TODO: Modificar para o user que tiver logado
+                    lessee.User = await _userHelper.GetUserByEmailAsync("vitorc@gmail.com");
+                    await _lesseeRepository.UpdateAsync(lessee);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _lesseeRepository.ExistAsync(model))
+                    if (await _lesseeRepository.ExistAsync(model.Id))
                     {
                         return NotFound();
                     }
@@ -180,7 +156,7 @@ namespace MyLeasing.Web.Controllers
                 return NotFound();
             }
 
-            var lessee = await _lesseeRepository.GetLesseeByIdWithUserAsync(id.Value);
+            var lessee = await _lesseeRepository.GetByIdAsync(id.Value);
             if (lessee == null)
             {
                 return NotFound();
@@ -189,18 +165,14 @@ namespace MyLeasing.Web.Controllers
             return View(lessee);
         }
 
-        // POST: Lessees/Delete/5
+        // POST: Owners/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var lessee = await _lesseeRepository.GetLesseeByIdWithUserAsync(id);
-            User user = lessee.user;
-            await _imageHelper.DeleteImageAsync(lessee.ImageUrl);
+            var lessee = await _lesseeRepository.GetByIdAsync(id);
             await _lesseeRepository.DeleteAsync(lessee);
-            await _userHelper.DeleteUserAsync(user);
             return RedirectToAction(nameof(Index));
         }
-
     }
 }
