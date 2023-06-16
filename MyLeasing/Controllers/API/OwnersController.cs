@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyLeasing.Commom.Data;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using System;
 
 namespace MyLeasing.Web.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OwnersController : Controller
+    public class OwnersController : ControllerBase
     {
         private readonly IOwnerRepository _ownerRepository;
 
@@ -18,9 +21,17 @@ namespace MyLeasing.Web.Controllers.API
         [HttpGet]
         public IActionResult GetOwners()
         {
-            return Ok(_ownerRepository.GetAllWithUsers());
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                // outras opções de serialização, se necessário
+            };
+
+            var jsonString = JsonSerializer.Serialize(_ownerRepository.GetAllWithUsers(), options);
+            return Ok(jsonString);
 
         }
+
 
     }
 }
