@@ -13,5 +13,7 @@ namespace MyLeasing.Web.Helpers
         Task<IdentityResult> AddUserAsync(User user, string password);
         Task<IdentityResult> UpdateUserAsync(User user, string name, string address, string phonenumber, string document);
         Task<IdentityResult> DeleteUserAsync(User user);
+        Task CheckRoleAsync(string roleName);
+        Task AddUserToRoleAsync(User user, string v);
     }
 }

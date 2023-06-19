@@ -27,6 +27,11 @@ namespace MyLeasing.Commom.Data
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync();
+
+            await _userHelper.CheckRoleAsync("Admin");
+            await _userHelper.CheckRoleAsync("Customer");
+            await _userHelper.CheckRoleAsync("Lesse");
+
             for (int i = 0; i < 5; i++)
             {
 
@@ -65,8 +70,13 @@ namespace MyLeasing.Commom.Data
             {
                 throw new InvalidOperationException("Could not create the user");
             }
-            return user;
+
+            await _userHelper.AddUserToRoleAsync(user, "Admin");
         }
+
+        var isInRole = await _userHelper.IsUserInRoleAsync(userAdmin, "Admin");
+        var isInRoleOwner = await _userHelper.IsUserInRoleAsync(userOwner, "Owner");
+        var isInRoleLesse = await _userHelper.IsUserInRoleAsync(userLesse, "Lesse");
         private async Task AddOwner(User user)
         {
             var owner = new Owner
@@ -141,4 +151,3 @@ namespace MyLeasing.Commom.Data
 
 
 }
-

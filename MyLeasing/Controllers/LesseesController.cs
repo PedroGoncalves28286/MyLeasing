@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyLeasing.Web.Data;
@@ -54,6 +55,8 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Lessees/Create
+
+        [Authorize(Roles ="Admin")]
         public IActionResult Create()
         {
             return View();
